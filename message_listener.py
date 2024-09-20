@@ -25,10 +25,13 @@ class MessageListener:
                     msg_data = json.loads(message)
                     # 判断是否是心跳消息
                     if msg_data.get('post_type') == 'meta_event' and msg_data.get('meta_event_type') == 'heartbeat':
-                        # 调用 HeartbeatHandler 处理心跳消息
+                        # 处理心跳消息
                         self.heartbeat_handler.add_heartbeat(msg_data)
+                    elif msg_data.get('post_type') == 'message' and msg_data.get('message_type') == 'private':
+                        # 收到私聊消息，处理它
+                        await self.process_private_message(websocket, msg_data)
                     else:
-                        # 记录非心跳消息
+                        # 记录其他消息
                         self.logger.info(f'收到消息：{message}')
             except websockets.exceptions.ConnectionClosed as e:
                 self.logger.info('连接已关闭')
@@ -36,11 +39,38 @@ class MessageListener:
             self.logger.warning(f'收到未知路径的连接：{path}')
             await websocket.close()
 
+    async def process_private_message(self, websocket, msg_data):
+        """处理 QQ 用户发送的私聊消息"""
+        user_id = msg_data['sender']['user_id']
+        message_text = msg_data.get('raw_message', '')
+        self.logger.info(f'收到来自 {user_id} 的私聊消息：{message_text}')
+
+        # 发送消息到 Dify
+        response = self.dify_client.send_request(message_text)
+        # 处理 Dify 的响应
+        answer = self.dify_receiver.process_response(response)
+
+        if answer:
+            # 构建回复消息
+            reply = {
+                "action": "send_private_msg",
+                "params": {
+                    "user_id": user_id,
+                    "message": answer
+                },
+                "echo": "send_private_msg"
+            }
+            # 将回复发送回 QQ 用户
+            await websocket.send(json.dumps(reply))
+            self.logger.debug(f'已向 {user_id} 发送回复')
+        else:
+            self.logger.error('未能从 Dify 获取有效响应')
+
     async def start(self, dify_client, dify_receiver):
         """启动 WebSocket 服务器"""
         self.dify_client = dify_client
         self.dify_receiver = dify_receiver
-        self.heartbeat_handler = HeartbeatHandler(self.logger, interval=30)
+        self.heartbeat_handler = HeartbeatHandler(self.logger, interval=300)
 
         # 使用自定义的处理函数来处理路径
         async def ws_handler(websocket, path):
