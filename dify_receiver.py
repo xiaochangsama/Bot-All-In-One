@@ -1,10 +1,12 @@
 # dify_receiver.py
 
+from logger import setup_logger
+
 class DifyReceiver:
     """处理从Dify接收到的反馈信息"""
 
     def __init__(self, logger=None):
-        self.logger = logger or setup_logger('DifyReceiver', 'dify_receiver.log')
+        self.logger = logger or setup_logger('DifyReceiver')
 
     def process_response(self, response):
         """处理Dify的响应"""
