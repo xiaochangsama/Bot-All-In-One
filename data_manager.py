@@ -1,28 +1,35 @@
 # data_manager.py
 
+import os
+import json
+
 class DataManager:
-    """管理数据的类"""
+    """管理用户数据的类"""
 
-    def __init__(self):
-        self.data = {}
+    def __init__(self, data_dir='data'):
+        self.data_dir = data_dir
+        if not os.path.exists(self.data_dir):
+            os.makedirs(self.data_dir)
 
-    def get_data(self, key):
-        """获取数据"""
-        return self.data.get(key, None)
+    def get_conversation_id(self, user_id):
+        """获取指定用户的会话 ID"""
+        filepath = os.path.join(self.data_dir, f'{user_id}.json')
+        if os.path.exists(filepath):
+            with open(filepath, 'r') as f:
+                data = json.load(f)
+            return data.get('conversation_id')
+        return None
 
-    def set_data(self, key, value):
-        """设置数据"""
-        self.data[key] = value
+    def set_conversation_id(self, user_id, conversation_id):
+        """保存用户的会话 ID"""
+        filepath = os.path.join(self.data_dir, f'{user_id}.json')
+        data = {'conversation_id': conversation_id}
+        with open(filepath, 'w') as f:
+            json.dump(data, f)
 
-    def delete_data(self, key):
-        """删除数据"""
-        if key in self.data:
-            del self.data[key]
-
-# 测试DataManager
+# 测试 DataManager
 if __name__ == "__main__":
     dm = DataManager()
-    dm.set_data('api_key', 'your_api_key_here')
-    print(dm.get_data('api_key'))
-    dm.delete_data('api_key')
-    print(dm.get_data('api_key'))
+    dm.set_conversation_id('user123', 'conv-001')
+    print(dm.get_conversation_id('user123'))  # 应该输出 'conv-001'
+

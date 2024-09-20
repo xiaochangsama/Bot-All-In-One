@@ -45,13 +45,11 @@ class MessageListener:
         message_text = msg_data.get('raw_message', '')
         self.logger.info(f'收到来自 {user_id} 的私聊消息：{message_text}')
 
-        # 发送消息到 Dify
-        response = self.dify_client.send_request(message_text)
-        # 处理 Dify 的响应
+        # 发送消息到 Dify，传递用户 ID
+        response = self.dify_client.send_request(message_text, user_id)
         answer = self.dify_receiver.process_response(response)
 
         if answer:
-            # 构建回复消息
             reply = {
                 "action": "send_private_msg",
                 "params": {
@@ -60,7 +58,6 @@ class MessageListener:
                 },
                 "echo": "send_private_msg"
             }
-            # 将回复发送回 QQ 用户
             await websocket.send(json.dumps(reply))
             self.logger.debug(f'已向 {user_id} 发送回复')
         else:
