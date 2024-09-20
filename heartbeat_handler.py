@@ -6,7 +6,7 @@ from collections import deque
 class HeartbeatHandler:
     """心跳消息处理器"""
 
-    def __init__(self, logger, interval=30):
+    def __init__(self, logger, interval=300):
         """
         初始化心跳处理器
         :param logger: 日志记录器
