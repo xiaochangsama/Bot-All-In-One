@@ -1,47 +1,48 @@
-# config_manager.py
-
 import configparser
 import os
 import shutil
 
 class ConfigManager:
-    """配置管理器，用于读取配置文件中的参数"""
+    """管理配置文件的类"""
 
-    def __init__(self, config_file='config/config.ini'):
+    def __init__(self, config_file='config/config.ini', default_file='config/default/default_config.ini'):
         self.config_file = config_file
-        self.default_config_file = 'config/default/config.default.ini'
+        self.default_file = default_file
+        self.config = self.load_config()
 
+    def load_config(self):
+        """加载配置文件，如果不存在则从默认配置文件复制"""
         if not os.path.exists(self.config_file):
-            self.create_default_config()
-
-        self.config = configparser.ConfigParser()
-        self.config.read(self.config_file, encoding='utf-8')
+            self.create_default_config()  # 如果 config.ini 不存在，从默认文件复制
+        config = configparser.ConfigParser()
+        # 使用 UTF-8 编码读取配置文件
+        with open(self.config_file, 'r', encoding='utf-8') as file:
+            config.read_file(file)
+        return config
 
     def create_default_config(self):
-        """创建默认的配置文件"""
-        if not os.path.exists(self.default_config_file):
-            raise FileNotFoundError(f'参考配置文件不存在：{self.default_config_file}')
+        """从默认配置文件复制 config.ini"""
+        if os.path.exists(self.default_file):
+            # 确保 config 目录存在
+            os.makedirs(os.path.dirname(self.config_file), exist_ok=True)
+            shutil.copy(self.default_file, self.config_file)
+            print(f"配置文件 {self.config_file} 不存在，已从默认配置 {self.default_file} 复制")
+        else:
+            raise FileNotFoundError(f"默认配置文件 {self.default_file} 不存在，无法创建 {self.config_file}")
 
-        config_dir = os.path.dirname(self.config_file)
-        if not os.path.exists(config_dir):
-            os.makedirs(config_dir)
+    def get_default(self, key, default=None):
+        """从配置文件中获取默认配置"""
+        return self.config['DEFAULT'].get(key, default)
 
-        # 复制参考配置文件到配置文件位置，保留注释
-        shutil.copyfile(self.default_config_file, self.config_file)
-        print(f'配置文件不存在，已创建默认配置文件：{self.config_file}')
-        print('请修改配置文件中的参数，然后重新运行程序。')
-        exit(0)
-
-    def get(self, section, option, fallback=None):
-        """获取指定 section 下的 option 值"""
-        return self.config.get(section, option, fallback=fallback)
-
-    def get_default(self, option, fallback=None):
-        """获取 DEFAULT section 下的 option 值"""
-        return self.get('DEFAULT', option, fallback)
+    def validate_config(self):
+        """验证配置文件是否包含所有必需字段"""
+        required_fields = ['api_key', 'dify_url', 'response_mode', 'user_id']
+        missing_fields = [field for field in required_fields if field not in self.config['DEFAULT']]
+        if missing_fields:
+            raise ValueError(f"配置文件中缺少必要字段: {', '.join(missing_fields)}")
 
 # 测试 ConfigManager
 if __name__ == "__main__":
     config_manager = ConfigManager()
-    api_key = config_manager.get_default('api_key')
-    print(f'API Key: {api_key}')
+    config_manager.validate_config()
+    print(config_manager.get_default('api_key'))

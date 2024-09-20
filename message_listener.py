@@ -1,13 +1,12 @@
-# message_listener.py
-
 import asyncio
 import websockets
 import json
 from logger import setup_logger
 from heartbeat_handler import HeartbeatHandler
+from dify_client import DifyClient  # 导入 DifyClient
 
 class MessageListener:
-    """作为 WebSocket 服务器，等待 OneBot 的连接"""
+    """WebSocket 服务器，等待 OneBot 的连接"""
 
     def __init__(self, host, port, path, logger=None):
         self.host = host
@@ -23,15 +22,11 @@ class MessageListener:
             try:
                 async for message in websocket:
                     msg_data = json.loads(message)
-                    # 判断是否是心跳消息
                     if msg_data.get('post_type') == 'meta_event' and msg_data.get('meta_event_type') == 'heartbeat':
-                        # 处理心跳消息
                         self.heartbeat_handler.add_heartbeat(msg_data)
                     elif msg_data.get('post_type') == 'message' and msg_data.get('message_type') == 'private':
-                        # 收到私聊消息，处理它
                         await self.process_private_message(websocket, msg_data)
                     else:
-                        # 记录其他消息
                         self.logger.info(f'收到消息：{message}')
             except websockets.exceptions.ConnectionClosed as e:
                 self.logger.info('连接已关闭')
@@ -45,7 +40,7 @@ class MessageListener:
         message_text = msg_data.get('raw_message', '')
         self.logger.info(f'收到来自 {user_id} 的私聊消息：{message_text}')
 
-        # 发送消息到 Dify，传递用户 ID
+        # 使用 DifyClient 发送请求
         response = self.dify_client.send_request(message_text, user_id)
         answer = self.dify_receiver.process_response(response)
 
@@ -69,7 +64,6 @@ class MessageListener:
         self.dify_receiver = dify_receiver
         self.heartbeat_handler = HeartbeatHandler(self.logger, interval=300)
 
-        # 使用自定义的处理函数来处理路径
         async def ws_handler(websocket, path):
             await self.handler(websocket, path)
 
