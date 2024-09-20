@@ -31,5 +31,3 @@ class HeartbeatHandler:
     def add_heartbeat(self, msg_data):
         """添加心跳消息到队列"""
         self.heartbeat_messages.append(msg_data)
-        # 不记录详细的心跳消息日志，只在简化输出时记录
-        self.logger.debug('收到心跳消息')
