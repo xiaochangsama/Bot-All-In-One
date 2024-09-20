@@ -20,7 +20,7 @@ def setup_logger(name, level=logging.INFO):
     # 文件处理器
     fh = logging.FileHandler(log_file, encoding='utf-8')
     fh.setFormatter(formatter)
-    fh.setLevel(level)
+    fh.setLevel(logging.DEBUG)
 
     # 控制台处理器
     ch = logging.StreamHandler()
