@@ -11,11 +11,11 @@ class DifyClient:
     def __init__(self, logger=None):
         self.logger = logger or setup_logger('DifyClient')
         config_manager = ConfigManager()
-        self.api_key = config_manager.get_default('api_key')
-        self.dify_url = config_manager.get_default('dify_url', 'http://localhost/v1/chat-messages')
-        self.response_mode = config_manager.get_default('response_mode', 'blocking')
-        self.user_id = config_manager.get_default('user_id', 'abc-123')
-        self.conversation_mode = config_manager.get_default('conversation_mode', 'single')
+        self.api_key = config_manager.get_all('api_key')
+        self.dify_url = config_manager.get_all('dify_url', 'http://localhost/v1/chat-messages')
+        self.response_mode = config_manager.get_all('response_mode', 'blocking')
+        self.user_id = config_manager.get_all('user_id', 'test')
+        self.conversation_mode = config_manager.get_all('conversation_mode', 'single')
         self.data_manager = DataManager()  # 用于管理会话 ID
 
         if not self.api_key or self.api_key == 'your_api_key_here':

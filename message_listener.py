@@ -95,7 +95,7 @@ class MessageListener:
         group_setting = self.config_manager.get_group_chat_setting(group_id)
         if not group_setting.get('enabled', True):
             self.logger.debug(f'群 {group_id} 已被配置为不回复消息')
-            return
+            return  # 群聊未启用回复，跳过处理
 
         # 优先交给插件管理器处理消息
         plugin_result = self.plugin_manager.handle_message(msg_data)
@@ -133,7 +133,6 @@ class MessageListener:
             self.logger.debug(f'已向群 {group_id} 发送回复')
         else:
             self.logger.error('未能从 Dify 获取有效响应')
-
 
     async def start(self, dify_client, dify_receiver):
         """启动 WebSocket 服务器"""

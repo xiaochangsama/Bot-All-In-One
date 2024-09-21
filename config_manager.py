@@ -20,7 +20,6 @@ class ConfigManager:
     def create_default_config(self):
         """从默认配置文件复制 config.json"""
         if os.path.exists(self.default_file):
-            # 确保 config 目录存在
             os.makedirs(os.path.dirname(self.config_file), exist_ok=True)
             shutil.copy(self.default_file, self.config_file)
             print(f"配置文件 {self.config_file} 不存在，已从默认配置 {self.default_file} 复制")
@@ -29,12 +28,29 @@ class ConfigManager:
 
     def get_default(self, key, default=None):
         """从配置文件中获取默认配置"""
+        return self.config.get("chat_setting", {}).get("default", {}).get(key, default)
+
+    def get_all(self, key, default=None):
+        """从配置文件中获取全部配置"""
         return self.config.get(key, default)
 
     def get_group_chat_setting(self, group_id):
-        """获取群聊的配置"""
-        group_config = self.config.get("group_chat", {})
-        return group_config.get(str(group_id), {"enabled": True})  # 默认启用
+        """获取群聊的配置，优先读取群聊特定配置"""
+        group_chats = self.config.get("chat_setting", {}).get("group_chat", {})
+        group_config = group_chats.get(str(group_id), None)
+        if group_config is not None:
+            return group_config
+        # 使用默认配置
+        return self.config.get("chat_setting", {}).get("default", {"enabled": False})
+
+    def get_private_chat_setting(self, user_id):
+        """获取个人聊天的配置，优先读取个人特定配置"""
+        private_chats = self.config.get("chat_setting", {}).get("private_chat", {})
+        private_config = private_chats.get(str(user_id), None)
+        if private_config is not None:
+            return private_config
+        # 使用默认配置
+        return self.config.get("chat_setting", {}).get("default", {"enabled": False})
 
     def validate_config(self):
         """验证配置文件是否包含所有必需字段"""
@@ -42,10 +58,3 @@ class ConfigManager:
         missing_fields = [field for field in required_fields if field not in self.config]
         if missing_fields:
             raise ValueError(f"配置文件中缺少必要字段: {', '.join(missing_fields)}")
-
-# 测试 ConfigManager
-if __name__ == "__main__":
-    config_manager = ConfigManager()
-    config_manager.validate_config()
-    print(config_manager.get_default('api_key'))
-    print(config_manager.get_group_chat_setting(123456))  # 测试获取群聊配置

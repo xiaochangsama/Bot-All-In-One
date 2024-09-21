@@ -5,12 +5,19 @@
   "user_id": "test",
   "conversation_mode": "single",
   "enabled_plugins": ["RealPersonGroupChat"],
-  "group_chat": {
-    "123456": {
+  "chat_setting": {
+    "default": {
       "enabled": true
     },
-    "654321": {
-      "enabled": false
+    "group_chat": {
+      "834013534": {
+        "enabled": true
+      },
+    },
+    "private_chat": {
+      "1354281282": {
+        "enabled": true
+      }
     }
   }
 }
