@@ -3,9 +3,8 @@ import websockets
 import json
 from logger import setup_logger
 from heartbeat_handler import HeartbeatHandler
-from dify_client import DifyClient  # 导入 DifyClient
+from dify_client import DifyClient  # 导入异步 DifyClient
 from plugin_manager import PluginManager  # 导入插件管理器
-
 
 class MessageListener:
     """WebSocket 服务器，等待 OneBot 的连接"""
@@ -26,16 +25,12 @@ class MessageListener:
             try:
                 async for message in websocket:
                     msg_data = json.loads(message)
-
-                    # 判断是否为心跳消息
-                    if not (msg_data.get('post_type') == 'meta_event' and msg_data.get(
-                            'meta_event_type') == 'heartbeat'):
-                        self.logger.debug(f'收到原始QQ消息：{message}')  # 记录非心跳消息
-
                     if msg_data.get('post_type') == 'meta_event' and msg_data.get('meta_event_type') == 'heartbeat':
                         self.heartbeat_handler.add_heartbeat(msg_data)
-                    elif msg_data.get('post_type') == 'message' and msg_data.get('message_type') == 'private':
-                        await self.process_private_message(websocket, msg_data)
+                    else:
+                        self.logger.debug(f'收到原始QQ消息：{message}')  # 记录非心跳消息
+                        if  msg_data.get('post_type') == 'message' and msg_data.get('message_type') == 'private':
+                            await self.process_private_message(websocket, msg_data)
             except websockets.exceptions.ConnectionClosed as e:
                 self.logger.info('连接已关闭')
         else:
@@ -67,8 +62,8 @@ class MessageListener:
                 self.logger.debug(f'插件处理后取消回复')
             return  # 插件已处理消息，跳过后续处理
 
-        # 如果插件没有处理，使用 DifyClient 发送请求
-        response = self.dify_client.send_request(message_text, user_id)
+        # 如果插件没有处理，使用 DifyClient 发送请求 (异步调用)
+        response = await self.dify_client.send_request(message_text, user_id)
         answer = self.dify_receiver.process_response(response)
 
         if answer:
