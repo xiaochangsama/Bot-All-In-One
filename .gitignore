@@ -2,3 +2,4 @@
 /.idea/
 *.pyc
 /data
+/config/config.json
