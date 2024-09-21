@@ -6,6 +6,7 @@ from heartbeat_handler import HeartbeatHandler
 from dify_client import DifyClient  # 导入 DifyClient
 from plugin_manager import PluginManager  # 导入插件管理器
 
+
 class MessageListener:
     """WebSocket 服务器，等待 OneBot 的连接"""
 
@@ -25,12 +26,16 @@ class MessageListener:
             try:
                 async for message in websocket:
                     msg_data = json.loads(message)
+
+                    # 判断是否为心跳消息
+                    if not (msg_data.get('post_type') == 'meta_event' and msg_data.get(
+                            'meta_event_type') == 'heartbeat'):
+                        self.logger.debug(f'收到原始QQ消息：{message}')  # 记录非心跳消息
+
                     if msg_data.get('post_type') == 'meta_event' and msg_data.get('meta_event_type') == 'heartbeat':
                         self.heartbeat_handler.add_heartbeat(msg_data)
                     elif msg_data.get('post_type') == 'message' and msg_data.get('message_type') == 'private':
                         await self.process_private_message(websocket, msg_data)
-                    else:
-                        self.logger.info(f'收到消息：{message}')
             except websockets.exceptions.ConnectionClosed as e:
                 self.logger.info('连接已关闭')
         else:

@@ -4,7 +4,7 @@ import logging
 import os
 from datetime import datetime
 
-def setup_logger(name, level=logging.INFO):
+def setup_logger(name, level=logging.DEBUG):
     """设置并返回一个日志记录器"""
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
