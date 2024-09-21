@@ -26,11 +26,11 @@ class MessageListener:
             self.plugin_manager.load_plugins()  # 加载启用的插件
             try:
                 async for message in websocket:
-                    self.logger.debug(f'收到原始QQ消息：{message}')  # 记录非心跳消息
                     msg_data = json.loads(message)
                     if msg_data.get('post_type') == 'meta_event' and msg_data.get('meta_event_type') == 'heartbeat':
                         self.heartbeat_handler.add_heartbeat(msg_data)
                     elif msg_data.get('post_type') == 'message':
+                        self.logger.debug(f'收到原始QQ消息：{message}')  # 记录非心跳消息
                         if msg_data.get('message_type') == 'private':
                             await self.process_private_message(websocket, msg_data)
                         elif msg_data.get('message_type') == 'group':
@@ -67,7 +67,7 @@ class MessageListener:
             return  # 插件已处理消息，跳过后续处理
 
         # 如果插件没有处理，使用 DifyClient 发送请求 (异步调用)
-        response = await self.dify_client.send_request(message_text, user_id)
+        response = await self.dify_client.send_request(message_text, user_id, is_group=False)
         answer = self.dify_receiver.process_response(response)
 
         if answer:
@@ -117,7 +117,7 @@ class MessageListener:
             return  # 插件已处理消息，跳过后续处理
 
         # 如果插件没有处理，使用 DifyClient 发送请求 (异步调用)
-        response = await self.dify_client.send_request(message_text, user_id)
+        response = await self.dify_client.send_request(message_text, group_id, is_group=True)
         answer = self.dify_receiver.process_response(response)
 
         if answer:
@@ -133,6 +133,7 @@ class MessageListener:
             self.logger.debug(f'已向群 {group_id} 发送回复')
         else:
             self.logger.error('未能从 Dify 获取有效响应')
+
 
     async def start(self, dify_client, dify_receiver):
         """启动 WebSocket 服务器"""
