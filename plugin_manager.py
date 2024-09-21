@@ -2,7 +2,6 @@ import importlib
 import os
 from config_manager import ConfigManager
 
-
 class PluginManager:
     """插件管理器"""
 
@@ -14,7 +13,7 @@ class PluginManager:
     def load_plugins(self):
         """根据配置文件加载启用的插件"""
         config_manager = ConfigManager()
-        plugins = config_manager.get_default('enabled_plugins', '').split(',')
+        plugins = config_manager.get_default('enabled_plugins', [])  # 直接获取列表
         self.enabled_plugins = [plugin.strip() for plugin in plugins if plugin.strip()]
 
         for plugin_name in self.enabled_plugins:
@@ -36,18 +35,17 @@ class PluginManager:
             print(f"插件 {plugin_name} 不存在: {e}")
             return None
 
-    def handle_message(self, message):
-        """将消息传递给插件处理"""
+    def handle_message(self, msg_data):
+        """将完整的原消息传递给插件处理"""
         for plugin_name, plugin_module in self.loaded_plugins.items():
             try:
-                result = plugin_module.handle_message(message)
+                result = plugin_module.handle_message(msg_data)  # 传递完整的消息
                 if result["type"] == "回复":
                     return {"handled": True, "reply": result["message"]}
                 elif result["type"] == "取消":
                     return {"handled": True, "reply": None}  # 取消回复
                 elif result["type"] == "跳出":
                     return {"handled": False, "reply": None}  # 跳出，主程序继续处理
-                # 如果是 "继续"，继续执行下一个插件
             except Exception as e:
                 print(f"插件 {plugin_name} 处理消息时出错: {e}")
         return {"handled": False, "reply": None}  # 所有插件处理完后没有处理消息

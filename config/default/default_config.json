@@ -1,0 +1,16 @@
+{
+  "api_key": "your_api_key_here",
+  "dify_url": "http://localhost/v1/chat-messages",
+  "response_mode": "blocking",
+  "user_id": "test",
+  "conversation_mode": "single",
+  "enabled_plugins": ["RealPersonGroupChat"],
+  "group_chat": {
+    "123456": {
+      "enabled": true
+    },
+    "654321": {
+      "enabled": false
+    }
+  }
+}
