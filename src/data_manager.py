@@ -25,15 +25,39 @@ class DataManager:
     def set_conversation_id(self, user_id, conversation_id):
         """保存用户的会话 ID"""
         filepath = os.path.join(self.data_dir, f'{user_id}.json')
-        data = {'conversation_id': conversation_id}
+        data = {}
+        if os.path.exists(filepath):
+            try:
+                with open(filepath, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+            except (json.JSONDecodeError, IOError) as e:
+                print(f"读取用户数据时出错: {e}")
+
+        # 更新 conversation_id，不影响其他字段
+        data['conversation_id'] = conversation_id
+
         try:
             with open(filepath, 'w', encoding='utf-8') as f:
                 json.dump(data, f, ensure_ascii=False, indent=4)
         except IOError as e:
             print(f"保存会话 ID 时出错: {e}")
 
-# 测试 DataManager
-if __name__ == "__main__":
-    dm = DataManager()
-    dm.set_conversation_id('user123', 'conv-001')
-    print(dm.get_conversation_id('user123'))  # 应该输出 'conv-001'
+    def set_latest_message_id(self, user_id, message_id):
+        """保存最新的消息 ID"""
+        filepath = os.path.join(self.data_dir, f'{user_id}.json')
+        data = {}
+        if os.path.exists(filepath):
+            try:
+                with open(filepath, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+            except (json.JSONDecodeError, IOError) as e:
+                print(f"读取用户数据时出错: {e}")
+
+        # 更新 latest_message_id，不影响其他字段
+        data['latest_message_id'] = message_id
+
+        try:
+            with open(filepath, 'w', encoding='utf-8') as f:
+                json.dump(data, f, ensure_ascii=False, indent=4)
+        except IOError as e:
+            print(f"保存最新消息 ID 时出错: {e}")

@@ -1,4 +1,6 @@
 import aiosqlite
+
+from src.data_manager import DataManager
 from src.database.use_aiosqlite.tools import format_timestamp
 
 # 异步创建/打开数据库并创建表
@@ -38,3 +40,7 @@ async def store_group_message(msg_data, conn):
     ''', (message_id, timestamp, user_id, nickname, role, message))
 
     await conn.commit()
+
+    # 更新DataManager中的最新消息ID
+    data_manager = DataManager()
+    data_manager.set_latest_message_id(group_id, message_id)
