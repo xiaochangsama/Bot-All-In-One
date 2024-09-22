@@ -1,10 +1,10 @@
 # main.py
 
 import asyncio
-from logger import setup_logger
-from dify_client import DifyClient
-from dify_receiver import DifyReceiver
-from message_listener import MessageListener
+from src.logger import setup_logger
+from src.dify_client import DifyClient
+from src.dify_receiver import DifyReceiver
+from src.message_listener import MessageListener
 
 async def main():
     # 设置日志

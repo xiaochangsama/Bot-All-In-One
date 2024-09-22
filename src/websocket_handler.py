@@ -1,5 +1,5 @@
-from database.use_aiosqlite.process_group_message import store_group_message
-from database.use_aiosqlite.process_private_message import store_private_message
+from src.database.use_aiosqlite.process_group_message import store_group_message
+from src.database.use_aiosqlite.process_private_message import store_private_message
 
 
 class WebSocketHandler:

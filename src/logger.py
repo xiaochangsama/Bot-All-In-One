@@ -9,7 +9,7 @@ def setup_logger(name, level=logging.DEBUG):
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
     # 创建日志目录
-    log_directory = os.path.join('run', 'log')
+    log_directory = os.path.join('./run', 'log')
     if not os.path.exists(log_directory):
         os.makedirs(log_directory)
 

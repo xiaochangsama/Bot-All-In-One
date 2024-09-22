@@ -1,7 +1,5 @@
 import aiosqlite
-import os
-import time
-from database.use_aiosqlite.tools import format_timestamp
+from src.database.use_aiosqlite.tools import format_timestamp
 
 # 异步创建/打开数据库并创建表
 async def init_private_db(user_id):

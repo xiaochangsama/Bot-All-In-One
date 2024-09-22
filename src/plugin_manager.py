@@ -1,6 +1,5 @@
 import importlib
-import os
-from config_manager import ConfigManager
+from src.config_manager import ConfigManager
 
 class PluginManager:
     """插件管理器"""

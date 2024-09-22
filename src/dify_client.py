@@ -1,8 +1,8 @@
 import requests
 import json
-from logger import setup_logger
-from config_manager import ConfigManager
-from data_manager import DataManager
+from src.logger import setup_logger
+from src.config_manager import ConfigManager
+from src.data_manager import DataManager
 
 
 class DifyClient:
