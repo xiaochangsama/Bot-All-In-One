@@ -78,3 +78,12 @@ class ConfigManager:
     def get_http_api_url(self):
         """获取 OneBot HTTP API URL"""
         return self.get_onebot_config().get("http_api_url", "http://127.0.0.1:8070")
+
+    def get_cache_message_limit(self, user_id):
+        """获取特定用户的消息缓存限制"""
+        private_config = self.get_private_chat_setting(user_id)
+        return private_config.get("message_cache_limit", 20)  # 默认缓存20条
+
+    def get_cache_settings(self, key, default=None):
+        """从配置文件中获取缓存相关的全局设置"""
+        return self.config.get("cache_settings", {}).get(key, default)
