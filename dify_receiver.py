@@ -1,3 +1,6 @@
+from logger import setup_logger
+
+
 class DifyReceiver:
     """处理从 Dify 接收到的反馈信息"""
 

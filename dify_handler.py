@@ -1,3 +1,6 @@
+import json
+
+
 class DifyHandler:
     def __init__(self, dify_client, dify_receiver, logger):
         self.dify_client = dify_client
