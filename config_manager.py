@@ -58,3 +58,7 @@ class ConfigManager:
         missing_fields = [field for field in required_fields if field not in self.config]
         if missing_fields:
             raise ValueError(f"配置文件中缺少必要字段: {', '.join(missing_fields)}")
+
+    def get_db_idle_timeout(self):
+        """获取数据库关闭倒计时（秒数）"""
+        return self.config.get("db_idle_timeout", 300)  # 默认300秒（5分钟）

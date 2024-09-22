@@ -19,5 +19,6 @@
         "enabled": true
       }
     }
-  }
+  },
+  "db_idle_timeout": 300
 }
