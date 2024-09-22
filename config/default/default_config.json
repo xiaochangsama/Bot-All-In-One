@@ -20,5 +20,10 @@
       }
     }
   },
-  "db_idle_timeout": 300
+  "db_idle_timeout": 300,
+  "onebot_config": {
+    "transport_type": "websocket",
+    "websocket_url": "ws://127.0.0.1:8070",
+    "http_api_url": ""
+  }
 }
