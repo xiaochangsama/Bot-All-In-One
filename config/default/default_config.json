@@ -7,18 +7,25 @@
   "enabled_plugins": ["RealPersonGroupChat"],
   "chat_setting": {
     "default": {
-      "enabled": true
+      "enabled": true,
+      "message_cache_limit": 50
     },
     "group_chat": {
       "834013534": {
-        "enabled": true
+        "enabled": true,
+        "message_cache_limit": 100
       }
     },
     "private_chat": {
       "1354281282": {
-        "enabled": true
+        "enabled": true,
+        "message_cache_limit": 20
       }
     }
+  },
+  "cache_settings": {
+    "cache_flush_interval": 600,
+    "cache_threshold_percentage": 50
   },
   "db_idle_timeout": 300,
   "onebot_config": {
