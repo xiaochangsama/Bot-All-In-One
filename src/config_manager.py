@@ -62,3 +62,19 @@ class ConfigManager:
     def get_db_idle_timeout(self):
         """获取数据库关闭倒计时（秒数）"""
         return self.config.get("db_idle_timeout", 300)  # 默认300秒（5分钟）
+
+    def get_onebot_config(self):
+        """获取 OneBot 的相关配置"""
+        return self.config.get("onebot_config", {})
+
+    def get_transport_type(self):
+        """获取消息发送的传输方式（WebSocket或HTTP）"""
+        return self.get_onebot_config().get("transport_type", "websocket")
+
+    def get_websocket_url(self):
+        """获取 OneBot WebSocket URL"""
+        return self.get_onebot_config().get("websocket_url", "ws://127.0.0.1:8070")
+
+    def get_http_api_url(self):
+        """获取 OneBot HTTP API URL"""
+        return self.get_onebot_config().get("http_api_url", "http://127.0.0.1:8070")
