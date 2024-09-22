@@ -1,5 +1,4 @@
-import json
-from src.message_builder import MessageBuilder  # 导入新的消息构建模块
+from src.sender.message_builder import MessageBuilder  # 导入新的消息构建模块
 
 class DifyHandler:
     def __init__(self, dify_client, dify_receiver, logger):
