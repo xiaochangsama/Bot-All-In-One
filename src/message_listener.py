@@ -32,13 +32,9 @@ class MessageListener:
                                                   self.db_manager, self.config_manager, self.logger)
 
         # 从配置文件获取 OneBot 相关设置
-        transport_type = self.config_manager.get_transport_type()
-        if transport_type == "websocket":
-            websocket_url = self.config_manager.get_websocket_url()
-            self.message_sender = OneBotMessageSender(transport="websocket", websocket_url=websocket_url)
-        elif transport_type == "http":
-            http_api_url = self.config_manager.get_http_api_url()
-            self.message_sender = OneBotMessageSender(transport="http", api_url=http_api_url)
+        websocket_url = self.config_manager.get_websocket_url()
+        self.message_sender = OneBotMessageSender( websocket_url=websocket_url)
+
 
     async def handler(self, websocket, path):
         """处理收到的消息"""
@@ -55,10 +51,6 @@ class MessageListener:
                             await self.websocket_handler.process_private_message(websocket, msg_data)
                         elif msg_data.get('message_type') == 'group':
                             await self.websocket_handler.process_group_message(websocket, msg_data)
-
-                            # 使用消息发送器发送消息
-                            reply_message = {"action": "send_group_msg", "params": {"group_id": 123456, "message": "Hello"}}
-                            await self.message_sender.send_message(reply_message)
 
             except websockets.exceptions.ConnectionClosed:
                 self.logger.info('连接已关闭')

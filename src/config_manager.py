@@ -80,10 +80,19 @@ class ConfigManager:
         return self.get_onebot_config().get("http_api_url", "http://127.0.0.1:8070")
 
     def get_cache_message_limit(self, user_id):
-        """获取特定用户的消息缓存限制"""
-        private_config = self.get_private_chat_setting(user_id)
-        return private_config.get("message_cache_limit", 20)  # 默认缓存20条
+        """获取特定用户的消息缓存限制，如果没有则使用默认配置"""
+        user_id_str = str(user_id)  # 确保 user_id 是字符串
+        # 尝试获取特定用户的配置
+        private_config = self.get_private_chat_setting(user_id_str)
+
+        # 如果用户的配置存在，则获取缓存限制
+        if private_config.get("enabled", False):
+            return private_config.get("message_cache_limit", 20)  # 默认缓存20条
+
+        # 如果用户配置不存在，返回默认配置
+        return self.get_default("message_cache_limit", 20)
 
     def get_cache_settings(self, key, default=None):
         """从配置文件中获取缓存相关的全局设置"""
         return self.config.get("cache_settings", {}).get(key, default)
+

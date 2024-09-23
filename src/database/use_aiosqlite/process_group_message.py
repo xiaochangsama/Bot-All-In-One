@@ -1,5 +1,9 @@
+import time
+
 import aiosqlite
 
+from src import config_manager
+from src.config_manager import ConfigManager
 from src.data_manager import DataManager
 from src.database.use_aiosqlite.tools import format_timestamp
 
@@ -25,12 +29,15 @@ async def init_group_db(group_id):
 
 # 异步存储群聊消息到数据库
 async def store_group_message(msg_data, conn):
+    # 初始化 ConfigManager 实例
+    config_manager = ConfigManager()
+
     group_id = msg_data['group_id']
     message_id = msg_data['message_id']
     user_id = msg_data['sender']['user_id']
-    nickname = msg_data['sender']['nickname'].encode().decode('unicode_escape')
+    nickname = msg_data['sender']['nickname']  # 直接获取昵称，不进行 encode 和 decode
     role = msg_data['sender']['role']
-    message = msg_data['raw_message'].encode().decode('unicode_escape')
+    message = msg_data['raw_message']
     timestamp = format_timestamp(msg_data['time'])
 
     # 插入消息记录
@@ -41,6 +48,10 @@ async def store_group_message(msg_data, conn):
 
     await conn.commit()
 
-    # 更新DataManager中的最新消息ID
-    data_manager = DataManager()
-    data_manager.set_latest_message_id(group_id, message_id)
+    # 准备message_data
+    timestamp_str = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())  # 获取当前时间戳
+    message_data = f"[{timestamp_str}] {nickname}: {message}"  # 格式化message_data
+
+    # 在存储消息后更新缓存
+    data_manager = DataManager(config_manager=config_manager)  # 传入 ConfigManager 实例
+    data_manager.set_latest_message_id(user_id, message_id, message_data)

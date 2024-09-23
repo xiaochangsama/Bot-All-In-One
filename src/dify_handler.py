@@ -1,4 +1,6 @@
 from src.sender.message_builder import MessageBuilder  # 导入新的消息构建模块
+from src.sender.onebot_message_sender import OneBotMessageSender
+
 
 class DifyHandler:
     def __init__(self, dify_client, dify_receiver, logger):
@@ -15,7 +17,9 @@ class DifyHandler:
         if answer:
             # 使用 MessageBuilder 构建消息
             reply = MessageBuilder.build_message(target_id, answer, is_group)
-            await websocket.send(reply)
+            # 回复消息
+            sender = OneBotMessageSender()  # 实例化 OneBotMessageSender
+            await sender.send_message(reply,msg_data, websocket)
             self.logger.debug(f'已向 {"群" if is_group else "用户"} {target_id} 发送 AI 回复')
         else:
             self.logger.error('未能从 Dify 获取有效响应')

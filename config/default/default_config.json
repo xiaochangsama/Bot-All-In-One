@@ -3,6 +3,7 @@
   "dify_url": "http://localhost/v1/chat-messages",
   "response_mode": "blocking",
   "user_id": "test",
+  "bot_name": "小藏",
   "conversation_mode": "single",
   "enabled_plugins": ["RealPersonGroupChat"],
   "chat_setting": {
@@ -30,7 +31,6 @@
   "db_idle_timeout": 300,
   "onebot_config": {
     "transport_type": "websocket",
-    "websocket_url": "ws://127.0.0.1:8070",
-    "http_api_url": ""
+    "websocket_url": "ws://127.0.0.1:8070"
   }
 }
