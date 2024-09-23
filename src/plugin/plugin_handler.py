@@ -1,6 +1,5 @@
 import json
 
-
 class PluginHandler:
     def __init__(self, plugin_manager, logger):
         self.plugin_manager = plugin_manager
@@ -22,8 +21,8 @@ class PluginHandler:
                     "echo": reply_action
                 }
                 await websocket.send(json.dumps(reply))
-                self.logger.debug(f'已向 {"群" if is_group else "用户"} {target_id} 发送插件回复')
+                self.logger.info(f'已向 {"群" if is_group else "用户"} {target_id} 发送插件回复')
             else:
-                self.logger.debug('插件处理后取消回复')
+                self.logger.info('插件处理后取消回复')
             return True
         return False

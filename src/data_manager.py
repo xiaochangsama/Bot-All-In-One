@@ -4,9 +4,12 @@ import json
 class DataManager:
     """管理用户数据的类"""
 
-    def __init__(self, data_dir='data', config_manager=None):
-        self.data_dir = data_dir
+    def __init__(self, config_manager=None):
+        # 从配置管理器中获取数据存储目录，如果没有提供则使用默认的 'data'
+        self.data_dir = './data'
         self.config_manager = config_manager
+
+        # 检查数据目录是否存在，如果不存在则创建
         if not os.path.exists(self.data_dir):
             os.makedirs(self.data_dir)
 
@@ -43,10 +46,10 @@ class DataManager:
         except IOError as e:
             print(f"保存会话 ID 时出错: {e}")
 
-
-    def _get_cache_limit(self, user_id):
-        """获取消息缓存限制"""
-        return self.config_manager.get_cache_message_limit(user_id)
+    def _get_cache_limit(self, user_id, is_group=False):
+        """获取消息缓存限制，基于聊天类型"""
+        chat_type = 'group' if is_group else 'private'
+        return self.config_manager.get_cache_message_limit(chat_type, user_id)
 
     def _get_cache_threshold_percentage(self):
         """获取缓存阈值百分比"""
@@ -72,7 +75,7 @@ class DataManager:
         except IOError as e:
             print(f"保存用户数据时出错: {e}")
 
-    def set_latest_message_id(self, user_id, message_id, message_data):
+    def set_latest_message_id(self, user_id, message_id, message_data, is_group=False):
         """保存最新的消息，并检查缓存是否需要清理"""
         data = self._load_user_data(user_id)
 
@@ -87,7 +90,7 @@ class DataManager:
         })
 
         # 获取缓存限制和阈值
-        cache_limit = self._get_cache_limit(user_id)
+        cache_limit = self._get_cache_limit(user_id, is_group)
         threshold_percentage = self._get_cache_threshold_percentage() / 100
         max_cache_size = cache_limit * 2
 
