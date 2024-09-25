@@ -1,11 +1,20 @@
 {
-  "api_key": "your_api_key_here",
-  "dify_url": "http://localhost/v1/chat-messages",
-  "response_mode": "blocking",
-  "user_id": "test",
-  "bot_name": "小藏",
-  "conversation_mode": "single",
+  "bot_dify": {
+    "api_key": "your_api_key_here",
+    "dify_url": "http://localhost/v1/chat-messages",
+    "response_mode": "blocking",
+    "conversation_mode": "single"
+  },
   "enabled_plugins": ["RealPersonGroupChat"],
+  "cache_settings": {
+    "cache_flush_interval": 600,
+    "cache_threshold_percentage": 50
+  },
+  "db_idle_timeout": 300,
+  "qq_onebot_config": {
+    "transport_type": "websocket",
+    "websocket_url": "ws://127.0.0.1:8070"
+  },
   "chat_setting": {
     "default": {
       "enabled": true,
@@ -23,14 +32,5 @@
         "message_cache_limit": 20
       }
     }
-  },
-  "cache_settings": {
-    "cache_flush_interval": 600,
-    "cache_threshold_percentage": 50
-  },
-  "db_idle_timeout": 300,
-  "onebot_config": {
-    "transport_type": "websocket",
-    "websocket_url": "ws://127.0.0.1:8070"
   }
 }
