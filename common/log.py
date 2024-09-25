@@ -24,7 +24,7 @@ log_file_name = datetime.now().strftime("debug_%Y-%m-%d_%H-%M-%S.log")
 log_file = os.path.join(log_folder, log_file_name)
 
 # 创建Logger对象
-logger = logging.getLogger('BotLogger')
+logger = logging.getLogger('Bot-All-In-One日志')
 logger.setLevel(logging.DEBUG)  # 设置最低日志级别为DEBUG
 
 # 创建FileHandler，用于记录DEBUG级别的日志到文件
